@@ -1,8 +1,9 @@
-package com.company.LLD.coffeeMachine.service;
+package com.company.coffeeMachine.service;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+// fixedThreadpul of outlets
 public class TaskExecutor {
 
     private static ExecutorService commonExecutor;

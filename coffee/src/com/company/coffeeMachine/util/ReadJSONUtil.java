@@ -1,12 +1,9 @@
-package com.company.LLD.coffeeMachine.service;
+package com.company.coffeeMachine.util;
 
-
-
-import com.company.LLD.coffeeMachine.dao.CoffeeMachineDaoSingleton;
-import com.company.LLD.coffeeMachine.model.Beverage;
-import com.company.LLD.coffeeMachine.model.BeverageIngredient;
-import com.company.LLD.coffeeMachine.model.Ingredient;
-import com.company.LLD.coffeeMachine.model.Outlet;
+import com.company.coffeeMachine.dao.ResourceManagerSingleton;
+import com.company.coffeeMachine.model.Beverage;
+import com.company.coffeeMachine.model.Ingredient;
+import com.company.coffeeMachine.service.TaskExecutor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -15,9 +12,10 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class ReadJSON {
+// for reading from the JSON file and preparing resources
+public class ReadJSONUtil {
 
-    private static CoffeeMachineDaoSingleton coffeeMachineDaoSingleton = CoffeeMachineDaoSingleton.getInstance();
+    private static ResourceManagerSingleton coffeeMachineDaoSingleton = ResourceManagerSingleton.getInstance();
     public static void setDAO(String fileName){
         BufferedReader br = null;
         StringBuffer json =new StringBuffer();
@@ -52,23 +50,23 @@ public class ReadJSON {
 
     public static void setOutlet(JSONObject outlets){
 
+        long v1 = (Long) outlets.get("count_n");
+        int outlet = (int) v1;
+        coffeeMachineDaoSingleton.setOutlets(outlet);
+        // Start thread Executor
+        TaskExecutor.setCommonExecutor(outlet);
+
         //System.out.println(outlets.get("count_n").getClass());
 
-        long v1 = (Long) outlets.get("count_n");
-        int outletNumber = (int) v1;
-        TaskExecutor.setCommonExecutor(outletNumber);
-        for(int i=0;i<outletNumber;i++){
-            coffeeMachineDaoSingleton.addOutlets(new Outlet());
-        }
     }
 
     public static void setIngredients(JSONObject ingredients){
-
+        // considering max limit is 1000 for every ingredients
         for(Object ing : ingredients.keySet()){
 
             long v1 = (Long) ingredients.get(ing);
-
-            coffeeMachineDaoSingleton.addIngredients(new Ingredient(ing.toString(),(int) v1,100));
+            Ingredient ingredient = new Ingredient(ing.toString(),(int) v1,100,1000);
+            coffeeMachineDaoSingleton.addIngredients(ingredient);
         }
     }
 
@@ -84,22 +82,26 @@ public class ReadJSON {
                 //System.out.println(item);
                 long l1 = (Long)items.get(item);
 
-
-                BeverageIngredient beverageIngredient = new BeverageIngredient(item.toString(),(int)l1);
-                beverage.getIngredients().add(beverageIngredient);
+                beverage.getIngredients().put(item.toString(),(int)l1);
             }
             //System.out.println();
         }
+
     }
 
 
     public static void main(String[] args) {
         setDAO("D:\\Desktop\\AEM_Training\\aem_projects\\java_fx\\java\\GeeksForGeeksTest\\src\\test1.json");
-        System.out.println(coffeeMachineDaoSingleton.getOutlets().size());
 
-        String s1 = coffeeMachineDaoSingleton.getOutlets().get(1).prepareBeverage(coffeeMachineDaoSingleton.getBeverages().get("hot_tea"));
+        for(String str : coffeeMachineDaoSingleton.getBeverages().keySet() ){
+            System.out.println(str+" : ");
 
-        System.out.println(s1);
+            for( String str1 : coffeeMachineDaoSingleton.getBeverages().get(str).getIngredients().keySet() ){
+                System.out.println(str1+" "+ coffeeMachineDaoSingleton.getBeverages().get(str).getIngredients().get(str1));
+            }
+
+
+        }
     }
 
 }

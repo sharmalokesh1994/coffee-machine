@@ -1,24 +1,25 @@
-package com.company.LLD.coffeeMachine.model;
+package com.company.coffeeMachine.model;
 
 public class Ingredient {
 
+	// if connect with DB
     private int uID;
     private static int UID = 1;
 
     private String name;
     // Considering all the ingredients are liquid so measured in ml
     private int quantity;
-    // for indicating (min limit)
     private int minLimit;
     private boolean indicator;
+    private int maxLimit;
 
-    public Ingredient(String name, int quantity, int minLimit) {
+    public Ingredient(String name, int quantity, int minLimit, int maxLimit) {
         setuID();
         setName(name);
         this.quantity = quantity;
-        // set minLimit before setting the quantity
         setMinLimit(minLimit);
         setQuantity(quantity);
+        setMaxLimit(maxLimit);
 
     }
 
@@ -47,14 +48,6 @@ public class Ingredient {
 
     public void setQuantity(int quantity) {
         this.quantity = this.quantity + quantity;
-
-        // check or update the indicator
-        if( this.quantity>minLimit && indicator){
-            //System.out.println("off the indicator");
-            indicator = false;
-        }else{
-            indicator = true;
-        }
     }
 
     public int getMinLimit() {
@@ -65,16 +58,25 @@ public class Ingredient {
         this.minLimit = minLimit;
     }
 
-    public boolean getIngredientForBeverage(int quantity){
-        if(getQuantity()>=quantity){
-            synchronized (Ingredient.class){
-                if(getQuantity()>=quantity){
-                    setQuantity(-quantity);
-                    return true;
-                }
+    public int getMaxLimit() {
+        return maxLimit;
+    }
+
+    public void setMaxLimit(int maxLimit) {
+        this.maxLimit = maxLimit;
+    }
+
+    public void updateIngredients(int value){
+    	// used synchronized for thread-safe
+        synchronized (Ingredient.class){
+            this.quantity = this.quantity + value;
+            if(this.quantity<this.minLimit){
+                System.out.println("Auto filling is going on "+name);
+                // fully Auto-filed happened
+                // todo: Auto-fill functionality
+                setQuantity(getMaxLimit());
             }
         }
-        return false;
 
     }
 }

@@ -1,4 +1,4 @@
-package com.company.LLD.coffeeMachine.customException;
+package com.company.coffeeMachine.customException;
 
 public class NotAvailableException extends RuntimeException {
     public NotAvailableException(String msg){
