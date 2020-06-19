@@ -16,7 +16,7 @@ public class Ingredient {
     public Ingredient(String name, int quantity, int minLimit, int maxLimit) {
         setuID();
         setName(name);
-        this.quantity = quantity;
+        
         setMinLimit(minLimit);
         setQuantity(quantity);
         setMaxLimit(maxLimit);
@@ -47,7 +47,7 @@ public class Ingredient {
     }
 
     public void setQuantity(int quantity) {
-        this.quantity = this.quantity + quantity;
+        this.quantity = quantity;
     }
 
     public int getMinLimit() {
@@ -66,17 +66,4 @@ public class Ingredient {
         this.maxLimit = maxLimit;
     }
 
-    public void updateIngredients(int value){
-    	// used synchronized for thread-safe
-        synchronized (Ingredient.class){
-            this.quantity = this.quantity + value;
-            if(this.quantity<this.minLimit){
-                System.out.println("Auto filling is going on "+name);
-                // fully Auto-filed happened
-                // todo: Auto-fill functionality
-                setQuantity(getMaxLimit());
-            }
-        }
-
-    }
 }

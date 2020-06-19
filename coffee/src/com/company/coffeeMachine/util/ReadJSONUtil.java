@@ -65,7 +65,7 @@ public class ReadJSONUtil {
         for(Object ing : ingredients.keySet()){
 
             long v1 = (Long) ingredients.get(ing);
-            Ingredient ingredient = new Ingredient(ing.toString(),(int) v1,100,1000);
+            Ingredient ingredient = new Ingredient(ing.toString(),(int) v1,400,1000);
             coffeeMachineDaoSingleton.addIngredients(ingredient);
         }
     }
